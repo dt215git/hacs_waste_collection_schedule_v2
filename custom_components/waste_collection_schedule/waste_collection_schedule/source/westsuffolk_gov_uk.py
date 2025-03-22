@@ -13,12 +13,13 @@ TEST_CASES = {
         "uprn": 10090739388
     },
     "Haere Mai, The Street, Troston, IP31 1EW": {"uprn": "100091387226"},
+    "Test_003": {"uprn": "200002750489"},
 }
 
 
 ICON_MAP = {
     "Black bin": "mdi:trash-can",
-    "Brown bin": "mdi:leaf",
+    "Brown   bin": "mdi:leaf",
     "Blue bin": "mdi:recycle",
 }
 
