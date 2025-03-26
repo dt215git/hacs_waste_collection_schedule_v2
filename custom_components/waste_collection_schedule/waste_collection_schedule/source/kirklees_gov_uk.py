@@ -18,7 +18,7 @@ TEST_CASES = {
     "HD8 8NA, 1": {"door_num": "1", "postcode": "HD8 8NA", "uprn": "83194785"},
 }
 
-BASE_URL = "https://www.kirklees.gov.uk/beta/your-property-bins-recycling/your-bins/"
+BASE_URL = "https://my.kirklees.gov.uk/service/Bins_and_recycling___Manage_your_bins"
 
 PARAMS = {
     "__EVENTTARGET": "",
