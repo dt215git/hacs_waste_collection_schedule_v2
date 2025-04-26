@@ -2,16 +2,20 @@ import datetime
 import re
 
 import requests
+from bs4 import BeautifulSoup
 from waste_collection_schedule import Collection
 
 TITLE = "Norwich City Council"
 DESCRIPTION = "Source for norwich.gov.uk"
 URL = "https://www.norwich.gov.uk"
 TEST_CASES = {
-    "1 Stuart Road": {"uprn": "100090924499"},
+    "UPRN": {"uprn": "100090924499"},
+    "Postcode & Number": {"postcode": "???", "house": "???"},
 }
 
-API_URL = "https://maps.norwich.gov.uk/arcgis/rest/services/MyNorwich/PropertyDetails/FeatureServer/3/query"
+# API_URL = "https://maps.norwich.gov.uk/arcgis/rest/services/MyNorwich/PropertyDetails/FeatureServer/3/query"
+API_URL = "https://bnr-wrp.whitespacews.com/mop.php#!"
+
 COLLECTION_TYPES = {
     "waste and food waste": {
         "title": "Waste and Food Waste",
@@ -25,8 +29,22 @@ COLLECTION_TYPES = {
 
 
 class Source:
-    def __init__(self, uprn: str):
+    def __init__(self, uprn: str, postcode: str, house: str | int):
         self._uprn = uprn
+        self._postcode = postcode
+        self._house = house
+
+    def get_postcode(self, s, u):
+        """Return the postcode for a given uprn.
+
+        Helps avoid a breaking change when Norwich altered their website back-end.
+        Subsequent waste collection schedule search assumes all addresses within a given postcode are collected on the same day.
+        """
+        r = s.get(f"https://uprn.uk/{u}")
+        soup = BeautifulSoup(r.content, "html.parser")
+        p = soup.find()
+
+        return p
 
     def fetch(self) -> list[Collection]:
         params = {
