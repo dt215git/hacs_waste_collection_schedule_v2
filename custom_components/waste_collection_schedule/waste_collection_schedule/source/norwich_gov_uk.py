@@ -42,8 +42,13 @@ class Source:
         """
         r = s.get(f"https://uprn.uk/{u}")
         soup = BeautifulSoup(r.content, "html.parser")
-        p = soup.find()
-
+        a = soup.find_all("a", href=True)
+        for item in a:
+            if "postcode" in item["href"]:
+                p = item.text
+            else:
+                # raise error message
+                pass
         return p
 
     def fetch(self) -> list[Collection]:
