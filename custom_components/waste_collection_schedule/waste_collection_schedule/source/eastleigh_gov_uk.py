@@ -11,7 +11,7 @@ TEST_CASES = {
     "100060319000": {"uprn": 100060319000},
     "100060300958": {"uprn": "100060300958"},
 }
-
+HEADERS = {"user-agent": "Mozilla/5.0"}
 
 ICON_MAP = {
     "Paper": "mdi:package-variant",
@@ -34,8 +34,16 @@ class Source:
         args = {"uprn": self._uprn}
 
         # get json file
-        r = requests.get(API_URL, params=args)
+        s = requests.Session()
+        r = s.get(
+            "https://www.eastleigh.gov.uk/waste-bins-and-recycling/collection-dates",
+            headers=HEADERS,
+        )
+        print(s.cookies)
+
+        r = s.get(API_URL, headers=HEADERS, params=args)
         r.raise_for_status()
+        print(r.cookies)
 
         soup = BeautifulSoup(r.text, "html.parser")
         dls = soup.find_all("dl")
