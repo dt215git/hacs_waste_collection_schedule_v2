@@ -43,7 +43,7 @@ ICON_MAP = {
 
 API_URL = "https://www.thurrock.gov.uk/household-bin-collection-days/household-bin-collection-weeks"
 STREETS_URL = (
-    "https://www.thurrock.gov.uk/household-bin-collection-days/street-names-{start}"
+    "https://www.thurrock.gov.uk/household-bin-collection-days/street-names{start}"
 )
 
 
@@ -60,9 +60,12 @@ class Source:
                 "street",
                 "Please provide a street name",
             )
-        r = requests.get(
-            STREETS_URL.format(start=self._street[0].lower()), verify=False
-        )
+
+        # streets beginning with "A" use different url
+        idx = f"-{self._street[0].lower()}"
+        if idx == "-a":
+            idx = ""
+        r = requests.get(STREETS_URL.format(start=idx), verify=False)
         r.raise_for_status()
         soup = BeautifulSoup(r.text.replace("\xa0", " "), "html.parser")
         table = soup.select_one("table")
@@ -110,23 +113,42 @@ class Source:
         self._day = WEEKDAYS[day_str.lower()]
 
     def parse_date_without_year(self, date_str: str) -> date:
-        now = datetime.now()
+        today = date.today()
+        candidates = []
 
-        try:
-            date_1 = datetime.strptime(date_str + f" {now.year}", "%d %B %Y").date()
-        except ValueError:
-            date_1 = datetime.strptime(date_str + f" {now.year + 1}", "%d %B %Y").date()
-        try:
-            date_2 = datetime.strptime(date_str + f" {now.year + 1}", "%d %B %Y").date()
-        except ValueError:
-            date_2 = date_1
+        for offset in (-1, 0, 1):  # Try previous year, this year, and next year
+            try:
+                full_date = datetime.strptime(
+                    f"{date_str} {today.year + offset}", "%d %B %Y"
+                ).date()
+                candidates.append(full_date)
+            except ValueError:
+                continue
 
-        try:
-            date_3 = datetime.strptime(date_str + f" {now.year - 1}", "%d %B %Y").date()
-        except ValueError:
-            date_3 = date_1
+        if not candidates:
+            raise ValueError(f"Could not parse a valid date from '{date_str}'")
 
-        return sorted([date_1, date_2, date_3], key=lambda x: abs(x - now.date()))[0]
+        # Return the date closest to today
+        return min(candidates, key=lambda d: abs(d - today))
+
+    # def parse_date_without_year(self, date_str: str) -> date:
+    #     now = datetime.now()
+
+    #     try:
+    #         date_1 = datetime.strptime(date_str + f" {now.year}", "%d %B %Y").date()
+    #     except ValueError:
+    #         date_1 = datetime.strptime(date_str + f" {now.year + 1}", "%d %B %Y").date()
+    #     try:
+    #         date_2 = datetime.strptime(date_str + f" {now.year + 1}", "%d %B %Y").date()
+    #     except ValueError:
+    #         date_2 = date_1
+
+    #     try:
+    #         date_3 = datetime.strptime(date_str + f" {now.year - 1}", "%d %B %Y").date()
+    #     except ValueError:
+    #         date_3 = date_1
+
+    #     return sorted([date_1, date_2, date_3], key=lambda x: abs(x - now.date()))[0]
 
     def parse_date_range(
         self, range_str: str, not_before: date | None = None
@@ -137,6 +159,7 @@ class Source:
         end_date = self.parse_date_without_year(end)
 
         end_date = datetime.strptime(end + f" {now.year}", "%d %B %Y").date()
+
         if start_date.month == 12 and end_date.month == 1:
             end_date = end_date.replace(year=start_date.year + 1)
 
