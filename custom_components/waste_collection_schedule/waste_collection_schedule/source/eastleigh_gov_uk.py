@@ -1,5 +1,6 @@
 from datetime import datetime
 
+# import brotli
 import requests
 from bs4 import BeautifulSoup
 from waste_collection_schedule import Collection  # type: ignore[attr-defined]
@@ -12,6 +13,13 @@ TEST_CASES = {
     "100060300958": {"uprn": "100060300958"},
 }
 
+HEADERS = {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0",
+    "cache-control": "private",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    # "referer":"https://www.eastleigh.gov.uk/waste-bins-and-recycling/collection-dates?Filters.PostalCode=SO505JH&Filters.House=&Filters.Street=&Filters.Town=&Submit=Search",
+    "accept-encoding": "gzip, deflate, br, zstd",
+}
 
 ICON_MAP = {
     "Paper": "mdi:package-variant",
@@ -31,10 +39,15 @@ class Source:
         self._uprn: str | int = uprn
 
     def fetch(self):
+        s = requests.Session()
+
         args = {"uprn": self._uprn}
 
         # get json file
-        r = requests.get(API_URL, params=args)
+        r = s.get(API_URL, headers=HEADERS, params=args)
+        print(r.content)
+        # decompressed = brotli.decompress(r.text)
+        # print(decompressed)
         r.raise_for_status()
 
         soup = BeautifulSoup(r.text, "html.parser")
