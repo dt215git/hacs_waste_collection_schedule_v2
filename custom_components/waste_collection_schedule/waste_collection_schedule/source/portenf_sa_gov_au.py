@@ -155,34 +155,73 @@ class Source:
         soup = BeautifulSoup(r.text, "html.parser")
         cal_header = soup.find("th", {"class": "header-month"}).find("span").text
 
-        month_range = cal_header.split("-")
-        from_month = month_range[0].strip()
+        # extract any months and years from calendar title
+        # title format is inconsistent, so work out missing months and years
+        pattern = r"(\w+)(?: (\d{4}))?(?: ?- ?(\w+)(?: (\d{4}))?)?"
+        months_years = re.findall(pattern, cal_header)
+        for match in months_years:
+            unpacked = [
+                m if m else None for m in match
+            ]  # [MONTH|None, YEAR|None,  MONTH|None, YEAR|None]
+            main_month, main_year, other_month, other_year = unpacked
+            print(unpacked)
+            print(main_month, main_year, other_month, other_year)
 
-        to_month, to_year, from_year = None, None, None
-        if len(month_range) > 1:
-            to_month = month_range[1].strip().split(" ")[0]
-            to_year = from_year = month_range[1].strip().split(" ")[1]
+            # when unpacked was [MONTH, YEAR, None, None]
+            if other_month is None and other_year is None:
+                other_month = main_month
+                other_year = main_year
 
-        # if main month contains a year, set it (maybe happens in december???)
-        if len(from_month.split(" ")) > 1:
-            from_year = from_month.split(" ")[1]
-            from_month = from_month.split(" ")[0]
+            # when unpacked was [MONTH, None, MONTH, YEAR]
+            if (
+                main_year is None
+                and datetime.strptime(main_month, "%B").month
+                < datetime.strptime(other_month, "%B").month
+            ):
+                main_year = other_year
+            else:
+                main_year = other_year - 1
 
-        today_div = soup.find("table", id="cal").find("td", class_="today")
+            # when unpacked was [MONTH, YEAR, MONTH, None]
+            if (
+                other_year is None
+                and datetime.strptime(main_month, "%B").month
+                > datetime.strptime(other_month, "%B").month
+            ):
+                other_year = main_year + 1
+            else:
+                other_year = main_year
 
-        # if other-month is to_month
-        if (
-            "other-month" in today_div.attrs["class"]
-            and datetime.now().strftime("%B") == to_month
-        ) or (
-            "main-month" in today_div.attrs["class"]
-            and datetime.now().strftime("%B") == from_month
-        ):
-            main_month, other_month = from_month, to_month
-            main_year, other_year = from_year, to_year
-        else:  # if other-month is from_month
-            main_month, other_month = to_month, from_month
-            main_year, other_year = to_year, from_year
+            print(main_month, main_year, other_month, other_year)
+
+        # month_range = cal_header.split("-")
+        # from_month = month_range[0].strip()
+
+        # to_month, to_year, from_year = None, None, None
+        # if len(month_range) > 1:
+        #     to_month = month_range[1].strip().split(" ")[0]
+        #     to_year = from_year = month_range[1].strip().split(" ")[1]
+
+        # # if main month contains a year, set it (maybe happens in december???)
+        # if len(from_month.split(" ")) > 1:
+        #     from_year = from_month.split(" ")[1]
+        #     from_month = from_month.split(" ")[0]
+
+        # today_div = soup.find("table", id="cal").find("td", class_="today")
+
+        # # if other-month is to_month
+        # if (
+        #     "other-month" in today_div.attrs["class"]
+        #     and datetime.now().strftime("%B") == to_month
+        # ) or (
+        #     "main-month" in today_div.attrs["class"]
+        #     and datetime.now().strftime("%B") == from_month
+        # ):
+        #     main_month, other_month = from_month, to_month
+        #     main_year, other_year = from_year, to_year
+        # else:  # if other-month is from_month
+        #     main_month, other_month = to_month, from_month
+        #     main_year, other_year = to_year, from_year
 
         entries = []
 
