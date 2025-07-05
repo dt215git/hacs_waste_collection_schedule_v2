@@ -49,7 +49,8 @@ class Source:
                 "Sec-Ch-Ua-Platform": '"Windows"',
                 "Upgrade-Insecure-Requests": "1",
                 "Origin": "https://www.welhat.gov.uk",
-                "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryQa2RpyAkWfhwGuwI",
+                "Content-Type": "application/x-www-form-urlencoded",
+                # "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryQa2RpyAkWfhwGuwI",
                 # 'User-Agent': 'HAOS',
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                 "Sec-Fetch-Site": "same-origin",
@@ -83,7 +84,7 @@ class Source:
         }
 
         response = s.post(
-            "https://www.welhat.gov.uk/xfp/form/214", headers=headers, data=data
+            "https://www.welhat.gov.uk/xfp/form/214", headers=headers, files=data
         )
         html = response.text
         print(html)
