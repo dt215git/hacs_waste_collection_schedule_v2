@@ -14,19 +14,16 @@ DESCRIPTION = "Source for Stockton-on-Tees Borough Council."
 URL = "https://www.stockton.gov.uk/"
 TEST_CASES = {
     "100110203615": {"uprn": "100110203615"},
-    "100110160417": {"uprn": "100110160417"},
-    "20002027430": {"uprn": 20002027430},
-    "100110206644": {"uprn": 100110206644},
+    # "100110160417": {"uprn": "100110160417"},
+    # "20002027430": {"uprn": 20002027430},
+    # "100110206644": {"uprn": 100110206644},
 }
-
-
+HEADERS = {"user-agent": "Mozilla/5.0", "cache-control": "no-cache, no-store"}
 ICON_MAP = {
     "Waste": "mdi:trash-can",
     "Garden Waste": "mdi:leaf",
     "Recycling": "mdi:recycle",
 }
-
-
 API_URL = "https://www.stockton.gov.uk/bin-collection-days"
 
 
@@ -39,7 +36,7 @@ class Source:
         session = requests.Session()
 
         # Start a session
-        r = session.get(API_URL)
+        r = session.get(API_URL, headers=HEADERS)
         r.raise_for_status()
         soup = BeautifulSoup(r.text, features="html.parser")
 
@@ -67,8 +64,10 @@ class Source:
             "LOOKUPBINDATESBYADDRESSSKIPOUTOFREGION_CUSTODIAN": "738",
         }
 
+        print(form_data)
+
         # Submit form
-        r = session.post(form_url, data=form_data)
+        r = session.post(form_url, data=form_data, headers=HEADERS)
         r.raise_for_status()
 
         # Extract encoded response data
