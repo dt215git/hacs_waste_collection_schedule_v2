@@ -12,20 +12,17 @@ TEST_CASES = {
     "100110560916": {"uprn": 100110560916},
     "200002724471": {"uprn": "200002724471"},
 }
-
-
 ICON_MAP = {
     "Recycle": "mdi:recycle",
     "Refuse": "mdi:trash-can",
     "Garden": "mdi:leaf",
 }
-
-
-API_URL = "https://www.darlington.gov.uk/bins-waste-and-recycling/calendar/"
-
+API_URL = (
+    "https://www.darlington.gov.uk/bins-waste-and-recycling/collection-day-lookup/"
+)
 WASTE_TYPES = ["Recycle", "Refuse", "Garden"]
-
 DATE_REGEX = re.compile(r"calDates.push\(new Date\((\d+)\)\);")
+HEADERS = {"user-agent": "Mozilla/5.0"}
 
 
 class Source:
@@ -40,7 +37,7 @@ class Source:
             args["collectiontype"] = waste_type
             icon = ICON_MAP.get(waste_type)
 
-            r = requests.get(API_URL, params=args)
+            r = requests.get(API_URL, params=args, headers=HEADERS)
             r.raise_for_status()
 
             # find all unix timestamps in the response
