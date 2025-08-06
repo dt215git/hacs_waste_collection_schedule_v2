@@ -16,7 +16,7 @@ TEST_CASES = {
     "Test_002": {"uprn": 100000058404},
     "Test_003": {"uprn": 100000033887},
 }
-
+HEADERS = {"user-agent": "Mozilla/5.0"}
 ICON_MAP = {
     "Household": "mdi:trash-can",
     "Recycling": "mdi:recycle",
@@ -33,7 +33,8 @@ class Source:
 
         # Start a session
         r = session.get(
-            "https://www.gateshead.gov.uk/article/3150/Bin-collection-day-checker"
+            "https://www.gateshead.gov.uk/article/3150/Bin-collection-day-checker",
+            headers=HEADERS,
         )
 
         r.raise_for_status()
@@ -64,7 +65,7 @@ class Source:
         }
 
         # Submit form
-        r = session.post(form_url, data=form_data)
+        r = session.post(form_url, data=form_data, headers=HEADERS)
         r.raise_for_status()
 
         # Extract encoded response data
