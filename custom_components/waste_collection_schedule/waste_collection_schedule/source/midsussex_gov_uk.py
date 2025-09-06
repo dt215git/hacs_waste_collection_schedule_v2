@@ -13,13 +13,13 @@ URL = "https://midsussex.gov.uk"
 
 TEST_CASES = {
     "Test_001": {"house_number": "6", "street": "Withypitts", "postcode": "RH10 4PJ"},
-    "Test_002": {
-        "house_name": "Oaklands",
-        "street": "Oaklands Road",
-        "postcode": "RH16 1SS",
-    },
-    "Test_003": {"house_number": 9, "street": "Bolnore Road", "postcode": "RH16 4AB"},
-    "Test_004": {"address": "HAZELMERE REST HOME, 21 BOLNORE ROAD RH16 4AB"},
+    #     "Test_002": {
+    #         "house_name": "Oaklands",
+    #         "street": "Oaklands Road",
+    #         "postcode": "RH16 1SS",
+    #     },
+    #     "Test_003": {"house_number": 9, "street": "Bolnore Road", "postcode": "RH16 4AB"},
+    #     "Test_004": {"address": "HAZELMERE REST HOME, 21 BOLNORE ROAD RH16 4AB"},
 }
 
 ICON_MAP = {
@@ -27,9 +27,12 @@ ICON_MAP = {
     "Rubbish bin collection": "mdi:trash-can",
     "Recycling bin collection": "mdi:recycle",
 }
-
+HEADER = {"user-agent": "Mozilla/5.0"}
 API_URL = "https://www.midsussex.gov.uk/waste-recycling/bin-collection/"
 REGEX = r"([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})"  # regex for UK postcode format
+
+
+# 17, WITHYPITTS, RH10 4PJ||UPRN:100062473816
 
 
 class Source:
@@ -50,17 +53,23 @@ class Source:
             self._postcode = re.findall(REGEX, self._address)
         elif self._house_name == "":
             self._address = (
-                self._house_number + " " + self._street + " " + self._postcode
+                self._house_number
+                + ", "
+                + self._street
+                + ", "
+                + self._postcode
+                + r"||UPRN:100062473816"
             )
         else:
             self._address = (
                 self._house_name
-                + ","
+                + ", "
                 + self._house_number
-                + " "
+                + ", "
                 + self._street
                 + " "
                 + self._postcode
+                + r"||UPRN:100062473816"
             )
 
         r0 = s.get(API_URL)
@@ -76,9 +85,11 @@ class Source:
             "Next": "true",
             "StepIndex": "1",
         }
+        # print(payload)
 
         # Seems to need a ufprt, so get that and then repeat query
         r1 = s.post(API_URL, data=payload)
+        # print(r1.text)
 
         soup = BeautifulSoup(r1.text, features="html.parser")
         ufprt = soup.find("input", {"name": "ufprt"}).get("value")
@@ -87,9 +98,11 @@ class Source:
 
         # Retrieve collection details
         r2 = s.post(API_URL, data=payload)
+        print(r2.text)
         soup = BeautifulSoup(r2.text, features="html.parser")
         table = soup.find("table", {"class": "collDates"})
-        trs = table.findAll("tr")[1:]  # remove header row
+        print(table)
+        trs = table.find_all("tr")[1:]  # remove header row
 
         entries: list[Collection] = []
 
