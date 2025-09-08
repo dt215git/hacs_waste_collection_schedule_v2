@@ -47,8 +47,8 @@ class Source:
 
     def generate_dates(self, wd: str) -> list:
         yr = datetime.now().year
-        start_date = datetime(yr, 1, 1)
-        end_date = datetime(yr, 12, 31)
+        start_date = datetime(yr, 1, 1)  # change to actual start date
+        end_date = datetime(yr, 12, 31)  # change to start date +12 months
         date_list = list(
             rrule(
                 freq=WEEKLY,
@@ -73,8 +73,7 @@ class Source:
             "returnZ": "true",
             "spatialRel": "esriSpatialRelIntersects",
         }
-        response = s.get(API_URL, params=params)
-        data = response.json()
+        data = s.get(API_URL, params=params).json()
 
         # Extract waste collection days
         result = next(
@@ -124,7 +123,7 @@ class Source:
                 wk = int(result["Kerbside"].split(" ")[1])  # "Week 2"
             except ValueError:
                 wk = WEEKS[result["Kerbside"].split(" ")[1].upper()]  # "Week Two"
-            if idx - 1 == wk:
+            if idx + 1 == wk:  # 0-based idx, 1-based week numbers
                 waste_type = "Kerbside"
                 entries.append(
                     Collection(
