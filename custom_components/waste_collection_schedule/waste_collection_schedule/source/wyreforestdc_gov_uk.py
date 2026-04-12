@@ -24,9 +24,9 @@ API_URLS = {
 }
 
 ICON_MAP = {
-    "rubbish (black bin)": "mdi:trash-can",
-    "recycling (green bin)": "mdi:recycle",
-    "garden waste (brown bin)": "mdi:leaf",
+    "Rubbish": "mdi:trash-can",
+    "Recycling": "mdi:recycle",
+    "Garden waste": "mdi:leaf",
 }
 
 DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
@@ -115,7 +115,7 @@ class Source:
             entries.append(
                 Collection(
                     date=coll_date,
-                    icon=ICON_MAP.get("garden waste"),
+                    icon=ICON_MAP.get("Garden waste"),
                     t="Garden waste",
                 )
             )
