@@ -96,7 +96,7 @@ SERVICE_PROVIDERS = {
         "requires_token": False,
     },
     "vanersborg": {
-        "title": "Vänerborg",
+        "title": "Vänersborg",
         "url": "https://www.vanersborg.se/",
         "api_url": "https://vanersborg.avfallsapp.se/api/nova/v1/",
         "supports_registration": False,

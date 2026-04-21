@@ -6,7 +6,7 @@ This is a waste collection schedule integration for the Avfallsapp API. Avfallsa
 <!--Begin of service section-->
 - `soderkoping`: Söderköping
 - `motala`: Motala
-- `vanersborg`: Vänerborg
+- `vanersborg`: Vänersborg
 <!--End of service section-->
 
 ## Current un-supported service providers (Cities)
@@ -70,7 +70,7 @@ waste_collection_schedule:
 **token**
 *(string) (optional)*
 
-Bearer token required by providers that use token-based authentication (e.g. Vänerborg). Obtain it by inspecting the mobile app's network requests.
+Bearer token required by providers that use token-based authentication (e.g. Vänersborg). Obtain it by inspecting the mobile app's network requests.
 
 ## Examples
 
@@ -85,7 +85,7 @@ waste_collection_schedule:
         service_provider: soderkoping
 ```
 
-Support for Vänerborg's municipality waste collection schedule.
+Support for Vänersborg's municipality waste collection schedule.
 
 ```yaml
 waste_collection_schedule:
