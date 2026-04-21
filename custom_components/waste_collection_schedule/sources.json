@@ -15621,6 +15621,14 @@
       "id": "vasyd_se"
     },
     {
+      "title": "Vafab Milj\u00f6",
+      "module": "edpevent_se",
+      "default_params": {
+        "service_provider": "vafabmiljo"
+      },
+      "id": "edpevent_se"
+    },
+    {
       "title": "Vaxholm",
       "module": "roslagsvatten_se",
       "default_params": {

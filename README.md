@@ -2413,6 +2413,7 @@ If your service provider is not listed, feel free to open a [source request issu
 - [Uppsala Vatten](/doc/source/edpevent_se.md) / uppsalavatten.se
 - [Uppsala Vatten och Avfall AB (Deprecated)](/doc/source/uppsalavatten_se.md) / uppsalavatten.se
 - [VA Syd Sophämntning](/doc/source/vasyd_se.md) / vasyd.se
+- [Vafab Miljö](/doc/source/edpevent_se.md) / vafabmiljo.se
 - [Vaxholm](/doc/source/roslagsvatten_se.md) / roslagsvatten.se
 - [VIVAB Sophämtning](/doc/source/vivab_se.md) / vivab.se
 - [Värmdö Sophämtning](/doc/source/varmdo_se.md) / varmdo.se
